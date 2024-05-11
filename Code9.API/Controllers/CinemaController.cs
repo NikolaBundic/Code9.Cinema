@@ -3,6 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using MediatR;
 using Code9.Domain.Models;
 using Code9.Domain.Queries;
+using Code9.API.Models;
+using System.Reflection.Metadata.Ecma335;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Code9.Domain.Commands;
 
 namespace Code9.API.Controllers
 {
@@ -21,6 +25,20 @@ namespace Code9.API.Controllers
             var query = new GetAllCinemaQuery();
             var cinema = await _mediator.Send(query);
             return Ok(cinema);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<Cinema>> AddCinema(AddCinemaRequest cinemaRequest) {
+            var addCinemaRequest = new AddCinemaCommand {
+                Name = cinemaRequest.Name,
+                City = cinemaRequest.City,
+                Street = cinemaRequest.Street,
+                NumberOfAuditoriums = cinemaRequest.NumberOfAuditoriums
+            };
+
+
+        var cinema = await _mediator.Send(addCinemaRequest);
+        return CreatedAtAction(nameof(GetAllCinema), new {id = cinema.Id }, cinema);
         }
     }
 }
